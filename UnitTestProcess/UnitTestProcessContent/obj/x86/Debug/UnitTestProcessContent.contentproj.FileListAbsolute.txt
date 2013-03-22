@@ -1,1 +1,0 @@
-C:\dev\XNA\Shooter\UnitTestProcess\UnitTestProcessContent\obj\x86\Debug\ResolveAssemblyReference.cache
