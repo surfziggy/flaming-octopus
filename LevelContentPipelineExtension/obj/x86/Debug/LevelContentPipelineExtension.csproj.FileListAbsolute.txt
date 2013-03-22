@@ -1,0 +1,7 @@
+C:\dev\XNA\Shooter\LevelContentPipelineExtension\bin\x86\Debug\LevelContentPipelineExtension.dll
+C:\dev\XNA\Shooter\LevelContentPipelineExtension\bin\x86\Debug\LevelContentPipelineExtension.pdb
+C:\dev\XNA\Shooter\LevelContentPipelineExtension\bin\x86\Debug\LevelLibrary.dll
+C:\dev\XNA\Shooter\LevelContentPipelineExtension\bin\x86\Debug\LevelLibrary.pdb
+C:\dev\XNA\Shooter\LevelContentPipelineExtension\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\dev\XNA\Shooter\LevelContentPipelineExtension\obj\x86\Debug\LevelContentPipelineExtension.dll
+C:\dev\XNA\Shooter\LevelContentPipelineExtension\obj\x86\Debug\LevelContentPipelineExtension.pdb

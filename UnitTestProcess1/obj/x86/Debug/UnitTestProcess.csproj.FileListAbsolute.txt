@@ -1,0 +1,5 @@
+C:\dev\XNA\Shooter\UnitTestProcess1\bin\Debug\UnitTestProcess1.exe
+C:\dev\XNA\Shooter\UnitTestProcess1\bin\Debug\UnitTestProcess1.pdb
+C:\dev\XNA\Shooter\UnitTestProcess1\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\dev\XNA\Shooter\UnitTestProcess1\obj\x86\Debug\UnitTestProcess1.exe
+C:\dev\XNA\Shooter\UnitTestProcess1\obj\x86\Debug\UnitTestProcess1.pdb

@@ -1,0 +1,6 @@
+C:\dev\XNA\Shooter\LevelLibrary\bin\x86\Debug\LevelLibrary.dll
+C:\dev\XNA\Shooter\LevelLibrary\bin\x86\Debug\LevelLibrary.pdb
+C:\dev\XNA\Shooter\LevelLibrary\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\dev\XNA\Shooter\LevelLibrary\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\dev\XNA\Shooter\LevelLibrary\obj\x86\Debug\LevelLibrary.dll
+C:\dev\XNA\Shooter\LevelLibrary\obj\x86\Debug\LevelLibrary.pdb
