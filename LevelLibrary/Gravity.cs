@@ -33,7 +33,7 @@ namespace LevelLibrary
             {
                 // Apply the velocity
                 spritepos.Y += vi;
-                // Erode the velocity (it's negative at the mo')
+                // Erode the velocity (it's negative at the mo')   
                 vi += gravityStrength;
                 // Once we reach zero(ish) velocity we will start to come back down
                 if (vi >= 0f)
@@ -53,6 +53,8 @@ namespace LevelLibrary
             // If we are not moving 
             else if (direction == LevelLibrary.Directions.none && isOnGround == false)
             {
+                // Apply the velocity
+                spritepos.Y += vi;
                 // If so we will start to fall
                 direction = LevelLibrary.Directions.down;
                 // Increase at rate of fall
