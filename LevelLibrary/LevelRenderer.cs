@@ -131,6 +131,7 @@ namespace LevelLibrary
             int row = 0;
             int column = 0;
 
+            isOnGround = false;
             playerRectangle = BoundingRectangle(position, Width, Height);
 
             // Work out where the center of the guy is
