@@ -175,36 +175,6 @@ namespace MyPlat
                     Zoom += 0.002f;
                 if (current.IsKeyDown(Keys.X))
                     Zoom -= 0.002f;
-                if (Source == null)
-                {
-
-                    /* If we are not following a game object, we want to 
-                     * move the camera with W, S, A, and D
-                     * W = Up
-                     * S = Down
-                     * A = Left
-                     * D = Right
-                     * Since Position is a property and not a direct object,
-                     * we cannot use Position.Y += 56 for example.
-                     * 
-                     * To counter this, we will use a movement vector
-                     * 
-                     * We also scale it by speed / zoom.  If we are at 
-                     * 200% zoom, we want the movement speed to be slower.
-                     * */
-                    Vector2 movement = Vector2.Zero;
-                    if (current.IsKeyDown(Keys.W))
-                        movement.Y -= 5.0f / Zoom;
-                    if (current.IsKeyDown(Keys.S))
-                        movement.Y += 5.0f / Zoom;
-                    if (current.IsKeyDown(Keys.A))
-                        movement.X -= 5.0f / Zoom;
-                    if (current.IsKeyDown(Keys.D))
-                        movement.X += 5.0f / Zoom;
-
-                    //Apply the movement vector
-                    Position = Vector2.Add(Position, movement);
-                }
             }
 
             /* Create a transform matrix through position, scale, rotation, and translation to the focus point
@@ -214,6 +184,8 @@ namespace MyPlat
             Vector2 objectPosition = Source != null ? Source.Position : Position;
             float objectRotation = Source != null ? Source.Rotation : Rotation;
             float deltaRotation = Source != null ? SourceRotationOffset : 0.0f;
+
+            objectPosition.X += 100f;
 
             Transform = Matrix.CreateTranslation(new Vector3(-objectPosition, 0)) *
                 Matrix.CreateScale(new Vector3((float)Math.Pow(Zoom, 10), (float)Math.Pow(Zoom, 10), 0)) *

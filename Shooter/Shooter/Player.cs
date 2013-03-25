@@ -23,8 +23,8 @@ namespace MyPlat
         public bool active;                                     // State of the player
         public int health;                                      // Amount of hit points that player has
         public bool hoverAbility;                               // Can I hover
-        public int jumpPower = -3;                              // Jump power
-        public float maxSpeed = 3f;                             // How fast can I run?
+        public int jumpPower = -15;                             // Jump power
+        public float maxSpeed = 6f;                             // How fast can I run?
         public float initialSpeed = 1f;                         // Run start speed
         bool jumping = false;                                   // Is character currently jumping?
         LevelLibrary.Gravity gravity;                           // Gravity logic
@@ -69,8 +69,6 @@ namespace MyPlat
             // Set the player health
             health = 100;
 
-            // Ability to jump
-            jumpPower = -7;
             // Can I hover
             hoverAbility = false;
 

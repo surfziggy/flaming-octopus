@@ -25,7 +25,7 @@ namespace MyPlat
             // Set the speed of the background
             this.speed = speed;
 
-            tilesNeeded = 4;
+            tilesNeeded = 5;
             if (tilesNeeded == 1) tilesNeeded++;
 
             // If we divide the screen with the texture width then we can determine the number of tiles need.
@@ -36,7 +36,7 @@ namespace MyPlat
             for (int i = 0; i < positions.Length; i++)
             {
                 // We need the tiles to be side by side to create a tiling effect
-                positions[i] = new Vector2((i * texture.Width), 0);
+                positions[i] = new Vector2(((i * texture.Width) - texture.Width), 0);
             }
         }
         public void Update(LevelLibrary.Directions direction)
@@ -44,8 +44,10 @@ namespace MyPlat
             // Update the positions of the background
             for (int i = 0; i < positions.Length; i++)
             {
+#if MODULE_DEBUG
                 Console.Write("Position[" + i + "].X = " + positions[i].X);
                 Console.WriteLine();
+#endif
                 // Update the position of the screen by adding the speed
                 if (direction == LevelLibrary.Directions.left)
                 {

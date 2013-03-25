@@ -15,7 +15,7 @@ namespace LevelLibrary
     {
 
         float vi = 0; // vi - initial velocity 
-        float gravityStrength = 0.2f;
+        float gravityStrength = 1f;
         public int objectHeight = 0;
         public int windowHeight = 0;
         public LevelLibrary.Directions direction;

@@ -127,11 +127,12 @@ namespace LevelLibrary
         public bool HandleClash(ref Vector2 position, int Width, int Height, ref bool isOnGround)
         {
             bool clash = false;
+            bool tileBelow = false;
             Rectangle playerRectangle;
             int row = 0;
             int column = 0;
+            
 
-            isOnGround = false;
             playerRectangle = BoundingRectangle(position, Width, Height);
 
             // Work out where the center of the guy is
@@ -187,6 +188,33 @@ namespace LevelLibrary
                 }
             }
 
+            // Check to see if we are in thin air.
+            if (clash == false)
+            {
+                // Will need to check one tile under.
+                playerRectangle = BoundingRectangle(position, Width, Height+1);
+
+                int y = bottomTile;
+                for (int x = leftTile; x <= rightTile; ++x)
+                {
+                    // If this tile is collidable,
+                    if (levelData.IsSupporting(y, x))
+                    {
+                        // Determine collision depth (with direction) and magnitude.
+                        Rectangle tileBounds = levelData.GetRectangle(y, x);
+                        Vector2 depth = RectangleExtensions.GetIntersectionDepth(playerRectangle, tileBounds);
+                        if (depth != Vector2.Zero)
+                        {
+                            tileBelow = true;
+                            break;
+                        }
+                    }
+                }
+                if (tileBelow != true)
+                {
+                    isOnGround = false;
+                }
+            }
             // Save the new bounds bottom.
             previousBottom = playerRectangle.Bottom;
 

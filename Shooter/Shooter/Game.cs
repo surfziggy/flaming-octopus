@@ -101,7 +101,7 @@ namespace MyPlat
             playerAnimation.Initialize(playerTexture1, playerTexture2, Vector2.Zero, 50, 50, 9, 50, Color.White, 1f, true);
 
             // TODO set initial position
-            Vector2 playerPosition = new Vector2(50, 
+            Vector2 playerPosition = new Vector2(100, 
                                                  350);
             player.Initialize(playerAnimation, playerPosition, GraphicsDevice.Viewport.Width,
                                             GraphicsDevice.Viewport.Height);
@@ -220,7 +220,7 @@ namespace MyPlat
             player.Draw(spriteBatch);
             particleEngine.Draw(spriteBatch);
             // Game info
-            spriteBatch.DrawString(font, info, new Vector2(50, 25), Color.White);
+            spriteBatch.DrawString(font, info, new Vector2(50, 400), Color.White);
 
             // Stop drawing
             spriteBatch.End();
