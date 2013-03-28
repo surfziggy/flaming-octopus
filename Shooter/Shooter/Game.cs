@@ -160,12 +160,12 @@ namespace MyPlat
             {
                 // Shake the camera.
                 camera.Shake(0.5f, 5f, 1f);
-                //particleEngine.Add(10);
+                particleEngine.Add(10);
             }
 
             // Update any particle effects
-           // particleEngine.EmitterLocation = player.position;
-           // particleEngine.Update();
+            particleEngine.EmitterLocation = player.position;
+            particleEngine.Update();
 
             // Update the HUD
             hud.Update(gameTime, player);
