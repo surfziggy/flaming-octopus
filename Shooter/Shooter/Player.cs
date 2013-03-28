@@ -14,27 +14,27 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MyPlat
 {
-    public class Player : GameObject
+    public class Player : LevelLibrary.GameObject
     {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public LevelLibrary.SpriteAnimator PlayerAnimation;     // Animation representing the player
-        public LevelLibrary.Directions direction;               // Players direction
-        public float currentSpeed;                              // Player speed now
-        public bool active;                                     // State of the player
-        public int health;                                      // Amount of hit points that player has
-        public bool hoverAbility;                               // Can I hover
-        public int jumpPower = -15;                             // Jump power
-        public float maxSpeed = 6f;                             // How fast can I run?
-        public float initialSpeed = 1f;                         // Run start speed
+        #region private members
+        LevelLibrary.SpriteAnimator PlayerAnimation;            // Animation representing the player
+        LevelLibrary.Directions direction;                      // Players direction
+        float currentSpeed;                                     // Player speed now
+        bool hoverAbility;                                      // Can I hover
+        int jumpPower = -15;                                    // Jump power
+        float maxSpeed = 6f;                                    // How fast can I run?
+        float initialSpeed = 1f;                                // Run start speed
         bool jumping = false;                                   // Is character currently jumping?
         LevelLibrary.Gravity gravity;                           // Gravity logic
         int frameTime = 40;                                     // Time to show each frame of animation
         bool isOnGround = false;
-
+        #endregion
+        #region Properties
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Method to return the size of the player sprite (width)
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public int Width
+        public override int Width
         {
             get { return PlayerAnimation.FrameWidth; }
         }
@@ -42,11 +42,12 @@ namespace MyPlat
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Method to return the size of the player sprite (height)
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public int Height
+        public override int Height
         {
             get { return PlayerAnimation.FrameHeight; }
         }
-
+        #endregion
+        #region Public Methods
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Initialise method
         // animation - texture atlas of all the animation frames
@@ -56,18 +57,16 @@ namespace MyPlat
             PlayerAnimation = animation;
 
             // Set the starting position of the player around the middle of the screen and to the back
-            Position = startPosition;
+            position = startPosition;
             direction = LevelLibrary.Directions.none;
             currentSpeed = 1f;
             gravity = new LevelLibrary.Gravity();
             gravity.windowHeight = ySize;
             gravity.objectHeight = PlayerAnimation.FrameHeight;
 
-            // Set the player to be active
-            active = true;
-
             // Set the player health
-            health = 100;
+            Health = 100;
+            Lives = 3;
 
             // Can I hover
             hoverAbility = false;
@@ -75,92 +74,20 @@ namespace MyPlat
             PlayerAnimation.Active = true;
             PlayerAnimation.Position = Position;
         }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Handles ;
-        // - collisions with platforms
-        // - applying gravity to the player
-        // - resetting the player position if needed.
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        private void UpdatePlayerGravityAndPlatforms(GameTime gameTime, LevelLibrary.LevelRenderer levelRenderer)
-        {
-            bool clashing;
-
-            gravity.Apply(ref position, gameTime, isOnGround);
-            
-            // Update the level positions and enemies
-            levelRenderer.Update(gameTime, ref position, this.Width, this.Height);
-
-            // Check for clashes
-            clashing = levelRenderer.HandleClash(ref position, Width, Height, ref isOnGround);
-
-            // If we clash with the square below and we're falling STOP
-            if (clashing)
-            {
-                if (gravity.direction == LevelLibrary.Directions.down)
-                {
-                    gravity.direction = LevelLibrary.Directions.none;
-                }
-                else if (gravity.direction == LevelLibrary.Directions.up)
-                {
-                    gravity.SetVelocity(1, LevelLibrary.Directions.down);
-                }
-            }
-
-            // If we have landed back on earth, we can jump again.
-            if (isOnGround || hoverAbility == true)
-            {
-                jumping = false;
-            }
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //  Update the players animation
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        private void Animate()
-        {
-            PlayerAnimation.frameTime = (frameTime - ((int)currentSpeed * 2));
-            // Set animation direction
-            PlayerAnimation.direction = direction;
-            // Apply current speed and direction
-            if ((direction == LevelLibrary.Directions.left) && 
-                (currentSpeed > 1))
-            {
-                position.X -= (int)currentSpeed;
-                //PlayerAnimation.NextFrame();
-                PlayerAnimation.Animating = true;
-            }
-            else if ((direction == LevelLibrary.Directions.right) && 
-                (currentSpeed > 1))
-            {
-                position.X += (int)currentSpeed;
-                //PlayerAnimation.NextFrame();
-                PlayerAnimation.Animating = true;
-            }
-            else if(currentSpeed < 1)
-            {
-                PlayerAnimation.Animating = false;
-            }
-        }
-
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Update the position, animation frame etc
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public void Update(LevelLibrary.LevelRenderer levelRenderer,       
-                                GameTime gameTime, 
+        public void Update(LevelLibrary.LevelRenderer levelRenderer,
+                                GameTime gameTime,
                                 bool jumpKey, bool leftKey, bool rightKey)
         {
-            //PlayerAnimation.Active = false;
-            HandleKeyPress(jumpKey, leftKey, rightKey);
+            UpdatePlayerSpeedAndDirection(jumpKey, leftKey, rightKey);
 
-            Animate();
+            UpdateAnimationMovementState();
 
             UpdatePlayerGravityAndPlatforms(gameTime, levelRenderer);
-            // Keep the player within the limits of the level
-            //ResetPositionOnScreen();
 
-            PlayerAnimation.Position = position;
-            PlayerAnimation.Update(gameTime);
+            UpdatePlayerAnimation(gameTime);
         }
 
         // Draw everything related to the player
@@ -168,9 +95,10 @@ namespace MyPlat
         {
             PlayerAnimation.Draw(spriteBatch);
         }
-        
+        #endregion
+        #region Private Methods
         // Handle player key presses
-        void HandleKeyPress(bool jumpKey, bool leftKey, bool rightKey)
+        private void UpdatePlayerSpeedAndDirection(bool jumpKey, bool leftKey, bool rightKey)
         {
             // We're jumping so set our velocity to upwards 
             if (jumpKey == true && !jumping)
@@ -239,5 +167,90 @@ namespace MyPlat
                 }
             }
         }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Handles ;
+        // - Set the animations position
+        // - Tell the animation class to animate the sprite
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private void UpdatePlayerAnimation(GameTime gameTime)
+        {
+            PlayerAnimation.Position = position;
+            PlayerAnimation.Update(gameTime);
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Handles ;
+        // - collisions with platforms
+        // - applying gravity to the player
+        // - resetting the player position if needed.
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private void UpdatePlayerGravityAndPlatforms(GameTime gameTime, LevelLibrary.LevelRenderer levelRenderer)
+        {
+            bool clashing;
+
+            gravity.Apply(ref position, gameTime, isOnGround);
+            
+            // Update the level positions and enemies
+            levelRenderer.Update(gameTime, ref position, this.Width, this.Height, this);
+
+            // Check for clashes
+            clashing = levelRenderer.HandleClash(ref position, Width, Height, ref isOnGround);
+
+            // If we clash with the square below and we're falling STOP
+            if (clashing)
+            {
+                if (gravity.direction == LevelLibrary.Directions.down)
+                {
+                    gravity.direction = LevelLibrary.Directions.none;
+                }
+                else if (gravity.direction == LevelLibrary.Directions.up)
+                {
+                    gravity.SetVelocity(1, LevelLibrary.Directions.down);
+                }
+            }
+
+            // If we have landed back on earth, we can jump again.
+            if (isOnGround || hoverAbility == true)
+            {
+                jumping = false;
+            }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //  Update the players animation
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private void UpdateAnimationMovementState()
+        {
+            PlayerAnimation.frameTime = (frameTime - ((int)currentSpeed * 2));
+            // Set animation direction
+
+            if (this.Alive == true)
+            {
+                PlayerAnimation.direction = direction;
+                // Apply current speed and direction
+                if ((direction == LevelLibrary.Directions.left) &&
+                    (currentSpeed > 1))
+                {
+                    position.X -= (int)currentSpeed;
+                    //PlayerAnimation.NextFrame();
+                    PlayerAnimation.Animating = true;
+                }
+                else if ((direction == LevelLibrary.Directions.right) &&
+                    (currentSpeed > 1))
+                {
+                    position.X += (int)currentSpeed;
+                    //PlayerAnimation.NextFrame();
+                    PlayerAnimation.Animating = true;
+                }
+                else if (currentSpeed < 1)
+                {
+                    PlayerAnimation.Animating = false;
+                }
+            }
+            else
+            {
+                Alive = true;
+            }
+        }
+        #endregion
     }
 }

@@ -7,8 +7,9 @@ namespace LevelLibrary
 {
     enum enemyMode
     {
-        Static,
-        Bouncing
+        Static = 0,
+        LeftRight = 1,
+        UpDown = 2
     };
 
     /// <summary>
@@ -49,7 +50,7 @@ namespace LevelLibrary
             screenLimits = scr;
         }
 
-        public void Update(GameTime gameTime, LevelLibrary.LevelRenderer levelRenderer)
+        public void Update(GameTime gameTime, LevelLibrary.LevelRenderer levelRenderer )
         {
             // Store our old position in case we need to reset 
             // because we're clashing with something
@@ -58,8 +59,11 @@ namespace LevelLibrary
             // Different guys have different movement patterns 
             switch (EnemyMode)
             {
-                case enemyMode.Bouncing:
-                    ModeBouncing(levelRenderer);
+                case enemyMode.LeftRight:
+                    ModeLeftRight(levelRenderer);
+                    break;
+                case enemyMode.UpDown:
+                    ModeLeftRight(levelRenderer);
                     break;
             }
 
@@ -84,7 +88,7 @@ namespace LevelLibrary
                                  enemyAnimation.FrameHeight));
         }
 
-        private void ModeBouncing(LevelLibrary.LevelRenderer levelRenderer)
+        private void ModeLeftRight(LevelLibrary.LevelRenderer levelRenderer)
         {
             //LevelLibrary.LevelRenderer.Sides clashingWith;
             bool clash = false;
@@ -92,13 +96,13 @@ namespace LevelLibrary
 
             position += direction;
 
-            clash = levelRenderer.HandleClash(ref position, 
+            clash = levelRenderer.HandleClash(ref position,
                                         enemyAnimation.FrameWidth, enemyAnimation.FrameHeight, ref isOnGround);
 
             // Clash on left ?
             // Clash on right ?
-            if ((clash) ||  (position.X <= 0) || (position.X >= screenLimits.X))
-            {                
+            if ((clash) || (position.X <= 0) || (position.X >= screenLimits.X))
+            {
                 //position = oldPosition;
                 // Reverse the direction by multiplying by -1
                 // e.g. 1 * -1 = -1
@@ -112,6 +116,37 @@ namespace LevelLibrary
                 else
                 {
                     enemyAnimation.direction = Directions.right;
+                }
+            }
+        }
+        private void ModeUpDown(LevelLibrary.LevelRenderer levelRenderer)
+        {
+            //LevelLibrary.LevelRenderer.Sides clashingWith;
+            bool clash = false;
+            bool isOnGround = false;
+
+            position += direction;
+
+            clash = levelRenderer.HandleClash(ref position, 
+                                        enemyAnimation.FrameWidth, enemyAnimation.FrameHeight, ref isOnGround);
+
+            // Clash on left ?
+            // Clash on right ?
+            if ((clash) ||  (position.Y <= 0) || (position.Y >= screenLimits.Y))
+            {                
+                //position = oldPosition;
+                // Reverse the direction by multiplying by -1
+                // e.g. 1 * -1 = -1
+                // and -1 * -1 =  1
+                // Nice huh?
+                direction.Y = direction.Y * -1.0f;
+                if (enemyAnimation.direction == Directions.up)
+                {
+                    enemyAnimation.direction = Directions.down;
+                }
+                else
+                {
+                    enemyAnimation.direction = Directions.up;
                 }
             }
         }

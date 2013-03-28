@@ -26,22 +26,23 @@ namespace MyPlat
 
     public class Game : Microsoft.Xna.Framework.Game
     {
+        #region Private Members
         GraphicsDeviceManager graphics;                 // Graphics device
         Camera camera;                                  // Viewpoint of the player
-        SpriteBatch spriteBatch;                        // Sprites
-        SpriteFont font; 
+        SpriteBatch spriteBatch;                        // Game Sprites
+        SpriteBatch hudBatch;                           // Heads Up Display Sprites
+        SpriteFont font;                                // Game font
         public Player player;                           // Represents the player 
         Input input;                                    // Handle the controller / keyboard
+        HUDisplay hud;                                  // Heads.Up.Display - score, lives etc
         bool fullScreenMode = false;                    // Full screen or not
-        string info;
-
-        // Parallaxing Layers
-        ParallaxingBackground mainbg;
-        ParallaxingBackground bgLayer1;
-        ParallaxingBackground bgLayer2;
-        LevelLibrary.LevelRenderer levelRenderer;
-        ParticleEngine particleEngine;
-
+        ParallaxingBackground mainbg;                   // Parallaxing Layer 1
+        ParallaxingBackground bgLayer1;                 // Parallaxing Layer 1
+        ParallaxingBackground bgLayer2;                 // Parallaxing Layer 1
+        LevelLibrary.LevelRenderer levelRenderer;       // Level rendering engine
+        ParticleEngine particleEngine;                  // Collision particle engine
+        #endregion 
+        #region Public Methods
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -55,7 +56,8 @@ namespace MyPlat
                 graphics.ApplyChanges();
             }
         }
-
+        #endregion
+        #region Protected Methods
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -76,6 +78,7 @@ namespace MyPlat
             // Camera that follows the player
             camera = new Camera(GraphicsDevice.Viewport, Vector2.Zero);
             camera.Follow(player, 0f);
+            hud = new HUDisplay();
 
             base.Initialize();
         }
@@ -88,7 +91,7 @@ namespace MyPlat
         {
 
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice); 
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             
             LoadLevel(1);
 
@@ -96,8 +99,7 @@ namespace MyPlat
             LevelLibrary.SpriteAnimator playerAnimation = new LevelLibrary.SpriteAnimator();
             Texture2D playerTexture1 = Content.Load<Texture2D>("GenericTextures\\walkingleft");
             Texture2D playerTexture2 = Content.Load<Texture2D>("GenericTextures\\walkingright");
-            //            playerAnimation.Initialize(playerTexture, Vector2.Zero, 115, 69, 8, 30, Color.White, 1f, true);
-            // TODO move this into the player
+
             playerAnimation.Initialize(playerTexture1, playerTexture2, Vector2.Zero, 50, 50, 9, 50, Color.White, 1f, true);
 
             // TODO set initial position
@@ -110,10 +112,6 @@ namespace MyPlat
             mainbg.Initialize(Content, "GenericTextures\\mainbackground", GraphicsDevice.Viewport.Width, 1); 
             bgLayer1.Initialize(Content, "GenericTextures\\bgLayer1", GraphicsDevice.Viewport.Width, 2);
             bgLayer2.Initialize(Content, "GenericTextures\\bgLayer2", GraphicsDevice.Viewport.Width, 3);
-            //bgLayer1.Initialize(Content, "GenericTextures\\bgLayer1", GraphicsDevice., 1);
-            //bgLayer2.Initialize(Content, "GenericTextures\\bgLayer2", GraphicsDevice.Viewport.Width, 2);
-
-            //mainBackground = Content.Load<Texture2D>("GenericTextures\\mainbackground");
 
             List<Texture2D> textures = new List<Texture2D>();
             textures.Add(Content.Load<Texture2D>("GenericTextures\\circle"));
@@ -121,8 +119,11 @@ namespace MyPlat
             textures.Add(Content.Load<Texture2D>("GenericTextures\\diamond"));
             particleEngine = new ParticleEngine(textures, new Vector2(400, 240));
 
+            // Heads Up Display
+            hudBatch = new SpriteBatch(GraphicsDevice);
             font = Content.Load<SpriteFont>("gameFont");
-            
+            hud.LoadContent(Content);
+            hud.Initialize(font);
         }
 
         /// <summary>
@@ -142,13 +143,78 @@ namespace MyPlat
         protected override void Update(GameTime gameTime)
         {
             LevelLibrary.Directions direction = LevelLibrary.Directions.none;
-            bool jump = false;
-            bool left = false;
-            bool right = false;
+            
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
+            UpdatePlayer(gameTime);
+
+            // Update the parallaxing background
+            mainbg.Update(direction);
+            bgLayer1.Update(direction);
+            bgLayer2.Update(direction);
+
+            // Check for enemy collisions
+            if (levelRenderer.HandleEnemyClash(player))
+            {
+                // Shake the camera.
+                camera.Shake(0.5f, 5f, 1f);
+                //particleEngine.Add(10);
+            }
+
+            // Update any particle effects
+           // particleEngine.EmitterLocation = player.position;
+           // particleEngine.Update();
+
+            // Update the HUD
+            hud.Update(gameTime, player);
+
+            base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.Black);
+
+            // Start drawing
+           spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.Transform);
+
+            // Draw the moving background
+            mainbg.Draw(spriteBatch);
+            bgLayer1.Draw(spriteBatch);
+            bgLayer2.Draw(spriteBatch);
+
+            // Draw the level
+            levelRenderer.Draw(gameTime, spriteBatch);
+
+            // Draw the Player
+            player.Draw(spriteBatch);
+            particleEngine.Draw(spriteBatch);
+
+            // Stop drawing
+            spriteBatch.End();
+
+            // Draw the HUD
+            hud.Draw(gameTime, hudBatch);
+
+            base.Draw(gameTime);
+        }
+        #endregion
+        #region Private Methods
+        /// <summary>
+        /// Update the players direction based on key presses or other input
+        /// </summary>
+        private LevelLibrary.Directions UpdatePlayer(GameTime gameTime)
+        {
+            LevelLibrary.Directions direction = LevelLibrary.Directions.none;
+            bool jump = false;
+            bool left = false;
+            bool right = false;
             // Update logic here
             input.UpdateInput(gameTime, camera);
             if (input.jumpKeyPressed == true)
@@ -175,59 +241,16 @@ namespace MyPlat
                 graphics.ApplyChanges();
                 this.fullScreenMode = true;
             }
-            
             // Update the player position
             player.Update(levelRenderer, gameTime, jump, left, right);
 
-            //particleEngine.EmitterLocation = player.position;
-            //particleEngine.Update();
-
-            // Update the parallaxing background
-            mainbg.Update(direction);
-            bgLayer1.Update(direction);
-            bgLayer2.Update(direction);
-
-            //Use the StringBuilder class to create a nice looking string to display
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("----------Player----------");
-            sb.AppendLine("x:" + player.position.X + " Y:" + player.position.Y);
-
-            info = sb.ToString();
-
-            base.Update(gameTime);
+            return (direction);
         }
-
         /// <summary>
-        /// This is called when the game should draw itself.
+        /// Load the specified level and initialise all the required objects for it
         /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.Black);
-
-            // Start drawing
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.Transform);
-
-            // Draw the moving background
-            mainbg.Draw(spriteBatch);
-            bgLayer1.Draw(spriteBatch);
-            bgLayer2.Draw(spriteBatch);
-
-            // Draw the level
-            levelRenderer.Draw(gameTime, spriteBatch);
-
-            // Draw the Player
-            player.Draw(spriteBatch);
-            particleEngine.Draw(spriteBatch);
-            // Game info
-            spriteBatch.DrawString(font, info, new Vector2(50, 400), Color.White);
-
-            // Stop drawing
-            spriteBatch.End();
-            base.Draw(gameTime);
-        }
-
-        public void LoadLevel(int levelNumber)
+        /// 
+        private void LoadLevel(int levelNumber)
         {
             String levelName;
             String levelTexturesName;
@@ -244,5 +267,6 @@ namespace MyPlat
             levelRenderer.LoadContent(Content);
             levelRenderer.Initialize(levelMap, levelTexture, 50, 50, 6, Color.White, 1f);
         }
+        #endregion
     }
 }

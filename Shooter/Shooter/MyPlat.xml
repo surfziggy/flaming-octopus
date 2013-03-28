@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MyPlat</name>
+    </assembly>
+    <members>
+        <member name="F:MyPlat.Input.currentDirection">
+            <summary>
+            Public variables    
+            </summary>
+        </member>
+        <member name="F:MyPlat.Input.oldState">
+            <summary>
+            Private data
+            </summary>
+        </member>
+        <member name="M:MyPlat.Program.Main(System.String[])">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="T:MyPlat.Game">
+            <summary>
+            This is the main type for your game
+            </summary>
+            
+        </member>
+        <member name="M:MyPlat.Game.Initialize">
+            <summary>
+            Allows the game to perform any initialization it needs to before starting to run.
+            This is where it can query for any required services and load any non-graphic
+            related content.  Calling base.Initialize will enumerate through any components
+            and initialize them as well.
+            </summary>
+        </member>
+        <member name="M:MyPlat.Game.LoadContent">
+            <summary>
+            LoadContent will be called once per game and is the place to load
+            all of your content.
+            </summary>
+        </member>
+        <member name="M:MyPlat.Game.UnloadContent">
+            <summary>
+            UnloadContent will be called once per game and is the place to unload
+            all content.
+            </summary>
+        </member>
+        <member name="M:MyPlat.Game.Update(Microsoft.Xna.Framework.GameTime)">
+            <summary>
+            Allows the game to run logic such as updating the world,
+            checking for collisions, gathering input, and playing audio.
+            </summary>
+            <param name="gameTime">Provides a snapshot of timing values.</param>
+        </member>
+        <member name="M:MyPlat.Game.Draw(Microsoft.Xna.Framework.GameTime)">
+            <summary>
+            This is called when the game should draw itself.
+            </summary>
+            <param name="gameTime">Provides a snapshot of timing values.</param>
+        </member>
+        <member name="M:MyPlat.Camera.#ctor(Microsoft.Xna.Framework.Graphics.Viewport,Microsoft.Xna.Framework.Vector2)">
+            <summary>
+            Initialize a new Camera object
+            </summary>
+            <param name="view">The viewport we want the camera to use (holds dimensions and so on)</param>
+            <param name="position">Where to point the center of the camera (0x0 will be the center of the viewport)</param>
+        </member>
+        <member name="M:MyPlat.Camera.#ctor(Microsoft.Xna.Framework.Graphics.Viewport,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2,System.Single,System.Single)">
+            <summary>
+            Initialize a new Camera object
+            </summary>
+            <param name="view">The viewport we want the camera to use (holds dimensions and so on)</param>
+            <param name="position">Where to position our camera relative to the focus point</param>
+            <param name="focus">Where to point the center of the camera (0x0 will be the center of the viewport)</param>
+            <param name="zoom">How much we want the camera zoomed by default</param>
+            <param name="rotation">How much we want the camera to be rotated by default</param>
+        </member>
+        <member name="M:MyPlat.Camera.Reset">
+            <summary>
+            Resets the camera to default values
+            </summary>
+        </member>
+        <member name="M:MyPlat.Camera.Shake(System.Single,System.Single,System.Single)">
+            <summary>
+            Perform a camera shake
+            </summary>
+            <param name="shakeTime">The amount of time to shake the camera</param>
+            <param name="min">The maximum amount to offset the camera</param>
+        </member>
+    </members>
+</doc>

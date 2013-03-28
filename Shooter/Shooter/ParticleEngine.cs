@@ -28,15 +28,16 @@ namespace MyPlat
             random = new Random();
         }
 
-        public void Update()
+        public void Add(int total)
         {
-            int total = 10;
-
             for (int i = 0; i < total; i++)
             {
                 particles.Add(GenerateNewParticle());
             }
+        }
 
+        public void Update()
+        {
             for (int particle = 0; particle < particles.Count; particle++)
             {
                 particles[particle].Update();

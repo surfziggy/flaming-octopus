@@ -10,91 +10,117 @@ namespace MyPlat
 {
     public class Camera
     {
-        //The viewport we want the camera to use (holds dimensions and so on)
+        /// <summary>
+        ///The viewport we want the camera to use (holds dimensions and so on)
+        /// </summary>
+        /// 
         public Viewport View
         {
             get;
             private set;
         }
-
-        //Where to point the center of the camera (0x0 will be the center of the viewport)
+        /// <summary>
+        ///Where to point the center of the camera (0x0 will be the center of the viewport)
+        /// </summary>
+        /// 
         public Vector2 Position
         {
             get;
             private set;
         }
-
-        //Copy of the old position when we start to shake
+        /// <summary>
+        ///Copy of the old position when we start to shake
+        /// </summary>
         public Vector2 SavedPosition
         {
             get;
             private set;
         }
-
-        //center of focus for the camera
+        /// <summary>
+        ///center of focus for the camera
+        /// </summary>
+        /// 
         public Vector2 FocusPoint
         {
             get;
             private set;
         }
-
-        //The zoom scalar (1.0f = 100% zoom level)
+        /// <summary>
+        ///The zoom scalar (1.0f = 100% zoom level)
+        /// </summary>
+        /// 
         public float Zoom
         {
             get;
             private set;
         }
-
-        //Amount to rotate the camera
+        /// <summary>
+        ///Amount to rotate the camera
+        /// </summary>
+        /// 
         public float Rotation
         {
             get;
             private set;
         }
-
-        //Copy of the old rotation when we start to shake
+        /// <summary>
+        ///Copy of the old rotation when we start to shake
+        /// </summary>
+        /// 
         public float SavedRotation
         {
             get;
             private set;
         }
-
-        //The amount to shake the camera in terms of position
+        /// <summary>
+        ///The amount to shake the camera in terms of position
+        /// </summary>
+        /// 
         public float PositionShakeAmount
         {
             get;
             private set;
         }
-
-        //The amount to shake the camera in terms of rotation
+        /// <summary>
+        ///The amount to shake the camera in terms of rotation
+        /// </summary>
+        /// 
         public float RotationShakeAmount
         {
             get;
             private set;
         }
-
-        //The maximum time the shake will last
+        /// <summary>
+        ///The maximum time the shake will last
+        /// </summary>
+        /// 
         public float MaxShakeTime
         {
             get;
             private set;
         }
-
-        //Our camera's transform matrix
+        /// <summary>
+        ///Our camera's transform matrix
+        /// </summary>
+        /// 
         public Matrix Transform
         {
             get;
             private set;
         }
-
-        //The source object to follow
+        /// <summary>
+        ///The source object to follow
+        /// </summary>
+        /// 
         public Player Source
         {
             get;
             private set;
         }
-
-        //Used to matching the rotation of the object, or any value you wish
+        /// <summary>
+        ///Used to matching the rotation of the object, or any value you wish
+        /// </summary>
+        /// 
         public float SourceRotationOffset
         {
             get;
@@ -136,7 +162,10 @@ namespace MyPlat
             random = new Random();
             FocusPoint = focus;
         }
-
+        /// <summary>
+        /// This is the main type for your game
+        /// </summary>
+        /// 
         public void Update(GameTime gametime, KeyboardState current, KeyboardState previous)
         {
             if (current.IsKeyDown(Keys.R))
@@ -225,7 +254,10 @@ namespace MyPlat
                 SavedRotation = Rotation;
             }
         }
-
+        /// <summary>
+        /// Set the object that the camera should follow
+        /// </summary>
+        /// 
         public void Follow(Player source, float rotationOffset)
         {
             Source = source;

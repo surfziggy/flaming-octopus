@@ -20,12 +20,12 @@ namespace LevelLibrary
         Level levelData;                            // The grid of data representing the level
         Texture2D spriteStrip;                      // The image representing the collection of images used for level backdrop
         float scale;                                // The scale used to display the sprite strip
-        int gridSquareCount;                        // The number of frames that the backdrop texture contains
+        int tileCount;                              // The number of frames that the backdrop texture contains
         Color color;                                // The color of the frame we will be displaying
         Rectangle sourceRect = new Rectangle();     // The area of the image strip we want to display
         Rectangle destinationRect = new Rectangle();// The area where we want to display the image strip in the game
-        public int gridSquareWidth;                 // Width of a given grid square
-        public int gridSquareHeight;                // Height of a given grid square
+        public int tileWidth;                       // Width of a given grid square
+        public int tileHeight;                      // Height of a given grid square
         public bool active;                         // The state of the level render
         public Vector2 position;                    // Position of the level on the screen
         Enemy[] enemies;
@@ -47,17 +47,17 @@ namespace LevelLibrary
             // Keep a local copy of the values passed in
             levelData = level;
             this.color = color;
-            this.gridSquareWidth = width;
-            this.gridSquareHeight = height;
-            this.gridSquareCount = gridCount;
+            this.tileWidth = width;
+            this.tileHeight = height;
+            this.tileCount = gridCount;
             this.scale = scale;
             spriteStrip = texture;
             // Set the backdrops to active by default
             active = true;
             position.X = 0;
             position.Y = 0;
-            screenLimits.X = levelData.Columns * gridSquareWidth;
-            screenLimits.Y = levelData.Rows * gridSquareHeight;
+            screenLimits.X = levelData.Columns * tileWidth;
+            screenLimits.Y = levelData.Rows * tileHeight;
 
 
             buildAnimations();
@@ -65,7 +65,7 @@ namespace LevelLibrary
         }
 
         // Update the level
-        public void Update(GameTime gameTime, ref Vector2 position, int Width, int Height)
+        public void Update(GameTime gameTime, ref Vector2 position, int Width, int Height, GameObject player)
         {
             UpdateEnemies(gameTime);
         }
@@ -83,12 +83,12 @@ namespace LevelLibrary
                     square = levelData.GetValue(row, column);
 
                     // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
-                    sourceRect = new Rectangle(square * gridSquareWidth, 0, gridSquareWidth, gridSquareHeight);
+                    sourceRect = new Rectangle(square * tileWidth, 0, tileWidth, tileHeight);
                     // Grab the correct frame in the image strip by multiplying the currentFrame index by the frame width
-                    destinationRect = new Rectangle((int)position.X +  (int)((gridSquareWidth * scale) * column),
-                    (int)position.Y + (int)((gridSquareHeight * scale) * row),
-                    (int)(gridSquareWidth * scale),
-                    (int)(gridSquareHeight * scale));
+                    destinationRect = new Rectangle((int)position.X +  (int)((tileWidth * scale) * column),
+                    (int)position.Y + (int)((tileHeight * scale) * row),
+                    (int)(tileWidth * scale),
+                    (int)(tileHeight * scale));
                     spriteBatch.Draw(spriteStrip, destinationRect, sourceRect, color);
                 }
             }
@@ -136,8 +136,8 @@ namespace LevelLibrary
             playerRectangle = BoundingRectangle(position, Width, Height);
 
             // Work out where the center of the guy is
-            column = (int)(position.X / gridSquareWidth);
-            row = (int)(position.Y / gridSquareHeight);
+            column = (int)(position.X / tileWidth);
+            row = (int)(position.Y / tileHeight);
 
             int leftTile = (int)Math.Floor((float)playerRectangle.Left / Width);
             int rightTile = (int)Math.Ceiling(((float)playerRectangle.Right / Width)) - 1;
@@ -221,6 +221,19 @@ namespace LevelLibrary
             return (clash);
         }
         
+        public bool HandleEnemyClash(GameObject player)
+        {
+            bool clash = false;
+            foreach(Enemy enemy in enemies)
+            {
+                if(enemy.GetBounds().Intersects(player.GetBounds()))
+                {
+                    player.Hit(1);
+                    clash = true;
+                }
+            }
+            return (clash);
+        }
 
         public int FindPlatformBelow(int row, int column)
         {
@@ -278,10 +291,10 @@ namespace LevelLibrary
             {
                 direction.X = 4.0f;
                 direction.Y = 0.0f;
-                startPosition.X = (float)(levelData.EnemyPositions[i, 0] * this.gridSquareWidth);
-                startPosition.Y = (float)(levelData.EnemyPositions[i, 1] * this.gridSquareHeight);
+                startPosition.X = (float)(levelData.EnemyPositions[i, 0] * this.tileWidth);
+                startPosition.Y = (float)(levelData.EnemyPositions[i, 1] * this.tileHeight);
                 enemies[i] = new Enemy();
-                enemies[i].Initialise(enemyAnimation[i], startPosition, enemyMode.Bouncing, direction, screenLimits);
+                enemies[i].Initialise(enemyAnimation[i], startPosition, enemyMode.LeftRight, direction, screenLimits);
             }
         }
 

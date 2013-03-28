@@ -24,8 +24,8 @@ namespace LevelLibrary
     public class SpriteAnimator
     {
         // The image representing the collection of images used for animation
-        Texture2D spriteStripLeft;
-        Texture2D spriteStripRight;
+        Texture2D  spriteStripLeft;
+        Texture2D  spriteStripRight;
 
         // The scale used to display the sprite strip
         float scale;
@@ -48,24 +48,19 @@ namespace LevelLibrary
 
         // The area where we want to display the image strip in the game
         Rectangle destinationRect = new Rectangle();
+        #region Properties
 
-        // Width of a given frame
-        public int FrameWidth;
-
-        // Height of a given frame
-        public int FrameHeight;
-
-        // The state of the Animation
-        public bool Active;
-        public bool Animating;
-
-        // Determines if the animation will keep playing or deactivate after one run
-        public bool Looping;
+        public int FrameWidth { get; set; }         // Width of a given frame
+        public int FrameHeight { get; set; }        // Height of a given frame
+        public bool Active { get; set; }            // The display state of the Animation (shown/not shown)
+        public bool Animating { get; set; }         // Stepping through frames or not        
+        public bool Looping { get; set; }           // Whether animation will keep playing after one run
+        public bool Alive { get; set; }
 
         // Width of a given frame
         public Vector2 Position;
         public Directions direction;
-
+        #endregion
         public void Initialize(Texture2D textureLeft, Texture2D textureRight, Vector2 position,
         int frameWidth, int frameHeight, int frameCount,
         int frametime, Color color, float scale, bool looping)
@@ -89,6 +84,7 @@ namespace LevelLibrary
             // Set the Animation to active by default
             Active = true;
             Animating = true;
+            Alive = true;
         }
         public void NextFrame()
         {

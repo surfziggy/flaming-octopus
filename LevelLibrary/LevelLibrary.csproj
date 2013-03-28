@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enemy.cs" />
+    <Compile Include="GameObject.cs" />
     <Compile Include="Gravity.cs" />
     <Compile Include="LevelClashDetect.cs" />
     <Compile Include="Level.cs" />

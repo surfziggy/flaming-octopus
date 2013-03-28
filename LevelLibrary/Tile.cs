@@ -56,7 +56,7 @@ namespace LevelLibrary
         public Tile(int texture)
         {
             Texture = texture;
-            if (texture == 0)
+            if (texture < 6)
             {
                 Collision = TileCollision.Passable;
             }

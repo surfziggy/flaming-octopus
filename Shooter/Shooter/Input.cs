@@ -31,6 +31,7 @@ namespace MyPlat
         private Keys rightKeyMapping;
         private Keys jumpKeyMapping;
         private Keys exitKeyMapping;
+        private Keys fullKeyMapping;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Initialise method 
@@ -43,6 +44,8 @@ namespace MyPlat
             rightKeyMapping = Keys.M;
             jumpKeyMapping = Keys.Space;
             exitKeyMapping = Keys.Escape;
+            fullKeyMapping = Keys.F;
+
             
             oldState = Keyboard.GetState();
             currentDirection = LevelLibrary.Directions.none;
@@ -72,11 +75,15 @@ namespace MyPlat
             {
                 currentDirection = LevelLibrary.Directions.right;
             }
-            if (newState.IsKeyDown(exitKeyMapping))
+            else if (newState.IsKeyDown(exitKeyMapping))
             {
                 exitKeyPressed = true;
             }
-
+            else if (newState.IsKeyDown(fullKeyMapping))
+            {
+                fullScreenPressed = true;
+            }
+            
             // Update saved state.
             oldState = newState;
         }
