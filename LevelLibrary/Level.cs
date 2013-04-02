@@ -53,12 +53,27 @@ namespace LevelLibrary
 
             if((row>=0 && row < Rows) && (column>=0 && column < Columns))
             {
-                if (tiles[row, column].Collision == TileCollision.Passable)
+                if( (tiles[row, column].Collision == TileCollision.Passable) ||
+                    (tiles[row, column].Collision == TileCollision.LevelExit))
                 {
                     supporting = false;
                 }       
             }
             return (supporting);
+        }
+
+        public bool isExit(int row, int column)
+        {
+            bool isExitReached = false;
+
+            if ((row >= 0 && row < Rows) && (column >= 0 && column < Columns))
+            {
+                if (tiles[row, column].Collision == TileCollision.LevelExit)
+                {
+                    isExitReached = true;
+                }
+            }
+            return (isExitReached);
         }
 
         public int GetValue(int row, int column)

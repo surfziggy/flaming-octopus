@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,7 +10,9 @@ namespace LevelLibrary
     {
         Static = 0,
         LeftRight = 1,
-        UpDown = 2
+        UpDown = 2,
+        Chase = 3,
+        Random = 4
     };
 
     /// <summary>
@@ -21,18 +24,25 @@ namespace LevelLibrary
         private Vector2         position;               // Enemy current position
         private Vector2 oldPosition;                    // Enemy previous position
         private Vector2 direction;                      // the current direction
+        private float duration;                         // Time duration of the current movement 
         private Vector2 screenLimits;                   // Size of the screen
+        private Vector2 playerPosition;                 // Players position
         private bool active;                            // Is the enemy active
         private int Health { get; set; }                // is the enemy alive and if so how much
-        public enemyMode EnemyMode { get; set; }
+        private Timer timer;                            // Timer to control movement direction
+        private Random random;                          // Random number generator
+        public enemyMode EnemyMode { get; set; }        // Enemy movement type property
 
+        public void UpdatePlayerLocation(Vector2 pos)
+        {
+            playerPosition = pos;
+        }
 
         public void Initialise(SpriteAnimator animation, Vector2 startPosition, 
                                 enemyMode mode, Vector2 dir, Vector2 scr)
         {
             enemyAnimation = animation;
 
-            // Set the starting position of the player around the middle of the screen and to the back
             position = startPosition;
             oldPosition = startPosition;
 
@@ -45,7 +55,24 @@ namespace LevelLibrary
             enemyAnimation.Active = true;
             enemyAnimation.Position = position;
             EnemyMode = mode;
-            direction = dir;
+            
+            direction = Vector2.Zero;
+            switch(mode)
+            {
+                case enemyMode.UpDown:
+                    direction.Y = 1f;
+                    break;
+                case enemyMode.LeftRight:
+                    direction.X = 1f;
+                    break;
+                case enemyMode.Chase:
+                    direction.X = 1f;
+                    break;
+                case enemyMode.Random:
+                    timer = new Timer();
+                    AssignNewDirection();
+                    break;
+            }
 
             screenLimits = scr;
         }
@@ -57,6 +84,7 @@ namespace LevelLibrary
             oldPosition = position;
             
             // Different guys have different movement patterns 
+            //direction.X = 1f;
             switch (EnemyMode)
             {
                 case enemyMode.LeftRight:
@@ -64,6 +92,9 @@ namespace LevelLibrary
                     break;
                 case enemyMode.UpDown:
                     ModeLeftRight(levelRenderer);
+                    break;
+                case enemyMode.Chase:
+                    ModeChase(levelRenderer);
                     break;
             }
 
@@ -121,7 +152,6 @@ namespace LevelLibrary
         }
         private void ModeUpDown(LevelLibrary.LevelRenderer levelRenderer)
         {
-            //LevelLibrary.LevelRenderer.Sides clashingWith;
             bool clash = false;
             bool isOnGround = false;
 
@@ -149,6 +179,47 @@ namespace LevelLibrary
                     enemyAnimation.direction = Directions.up;
                 }
             }
+        }
+        private void ModeChase(LevelLibrary.LevelRenderer levelRenderer)
+        {
+            bool clash = false;
+            bool isOnGround = false;
+
+            if (playerPosition.X < position.X)
+            {
+                direction.X = -1f;
+            }
+            else
+            {
+                direction.X = 1f;
+            }
+
+            position += direction;
+
+            clash = levelRenderer.HandleClash(ref position,
+                                        enemyAnimation.FrameWidth, enemyAnimation.FrameHeight, ref isOnGround);
+
+            // Clash on left ?
+            // Clash on right ?
+            if ((clash) || (position.X <= 0) || (position.X >= screenLimits.X))
+            {
+                direction.Y = 0f;
+            }
+        }
+        private void AssignNewDirection()
+        {
+            random = new Random();
+            direction.X = (float)random.Next(-5, 5);
+            direction.Y = (float)random.Next(-5, 5);
+            duration = (float)random.Next(1000,4000);
+            timer.Elapsed += new ElapsedEventHandler(TimerExpired);
+            timer.Interval = duration;
+            timer.Enabled = true;
+        }
+        // Specify what you want to happen when the Elapsed event is raised.
+        private void TimerExpired(object source, ElapsedEventArgs e)
+        {
+            AssignNewDirection();
         }
     }
 }

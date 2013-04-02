@@ -27,27 +27,39 @@ namespace MyPlat
     public class Game : Microsoft.Xna.Framework.Game
     {
         #region Private Members
-        GraphicsDeviceManager graphics;                 // Graphics device
-        Camera camera;                                  // Viewpoint of the player
-        SpriteBatch spriteBatch;                        // Game Sprites
-        SpriteBatch hudBatch;                           // Heads Up Display Sprites
-        SpriteFont font;                                // Game font
-        public Player player;                           // Represents the player 
-        Input input;                                    // Handle the controller / keyboard
-        HUDisplay hud;                                  // Heads.Up.Display - score, lives etc
-        bool fullScreenMode = false;                    // Full screen or not
-        ParallaxingBackground mainbg;                   // Parallaxing Layer 1
-        ParallaxingBackground bgLayer1;                 // Parallaxing Layer 1
-        ParallaxingBackground bgLayer2;                 // Parallaxing Layer 1
-        LevelLibrary.LevelRenderer levelRenderer;       // Level rendering engine
-        ParticleEngine particleEngine;                  // Collision particle engine
+        private GraphicsDeviceManager graphics;                 // Graphics device
+        private Camera camera;                                  // Viewpoint of the player
+        private SpriteBatch spriteBatch;                        // Game Sprites
+        private SpriteBatch hudBatch;                           // Heads Up Display Sprites
+        private SpriteFont font;                                // Game font
+        private Player player;                                  // Represents the player 
+        private Input input;                                    // Handle the controller / keyboard
+        private HUDisplay hud;                                  // Heads.Up.Display - score, lives etc
+        private bool fullScreenMode = false;                    // Full screen or not
+        private ParallaxingBackground mainbg;                   // Parallaxing Layer 1
+        private ParallaxingBackground bgLayer1;                 // Parallaxing Layer 1
+        private ParallaxingBackground bgLayer2;                 // Parallaxing Layer 1
+        private LevelLibrary.LevelRenderer levelRenderer;       // Level rendering engine
+        private ParticleEngine particleEngine;                  // Collision particle engine
+        private bool playing = false;
+        
+        /// <summary>
+        /// Game configuration goes here
+        /// </summary>
+        //private int windowWidth = 1000;
+        //private int windowHeight = 600;
+        private int windowWidth = 400;
+        private int windowHeight = 400;
+        private int level = 1;
+        private int numLevels = 2;
+
         #endregion 
         #region Public Methods
         public Game()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 400;
-            graphics.PreferredBackBufferHeight = 400;
+            graphics.PreferredBackBufferWidth = windowWidth;
+            graphics.PreferredBackBufferHeight = windowHeight;
 
             Content.RootDirectory = "Content";
             if (fullScreenMode)
@@ -162,6 +174,13 @@ namespace MyPlat
                 camera.Shake(0.5f, 5f, 1f);
                 particleEngine.Add(10);
             }
+            if (levelRenderer.HasPlayerReachedExit(player.position))
+            {
+                playing = false;
+                level++;
+                LoadLevel(2);
+//              player.position.X = 100;
+            }
 
             // Update any particle effects
             particleEngine.EmitterLocation = player.position;
@@ -181,27 +200,29 @@ namespace MyPlat
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // Start drawing
-           spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.Transform);
+            if (playing == true)
+            {
+                // Start drawing
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, camera.Transform);
 
-            // Draw the moving background
-            mainbg.Draw(spriteBatch);
-            bgLayer1.Draw(spriteBatch);
-            bgLayer2.Draw(spriteBatch);
+                // Draw the moving background
+                mainbg.Draw(spriteBatch);
+                bgLayer1.Draw(spriteBatch);
+                bgLayer2.Draw(spriteBatch);
 
-            // Draw the level
-            levelRenderer.Draw(gameTime, spriteBatch);
+                // Draw the level
+                levelRenderer.Draw(gameTime, spriteBatch);
 
-            // Draw the Player
-            player.Draw(spriteBatch);
-            particleEngine.Draw(spriteBatch);
+                // Draw the Player
+                player.Draw(spriteBatch);
+                particleEngine.Draw(spriteBatch);
 
-            // Stop drawing
-            spriteBatch.End();
+                // Stop drawing
+                spriteBatch.End();
 
-            // Draw the HUD
-            hud.Draw(gameTime, hudBatch);
-
+                // Draw the HUD
+                hud.Draw(gameTime, hudBatch);
+            }
             base.Draw(gameTime);
         }
         #endregion
@@ -266,6 +287,8 @@ namespace MyPlat
 #endif
             levelRenderer.LoadContent(Content);
             levelRenderer.Initialize(levelMap, levelTexture, 50, 50, 6, Color.White, 1f);
+
+            playing = true;
         }
         #endregion
     }

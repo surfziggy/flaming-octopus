@@ -67,7 +67,8 @@ namespace LevelLibrary
         // Update the level
         public void Update(GameTime gameTime, ref Vector2 position, int Width, int Height, GameObject player)
         {
-            UpdateEnemies(gameTime);
+            UpdateEnemies(player.position, gameTime);
+
         }
         // Draw the level to the background
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -101,6 +102,15 @@ namespace LevelLibrary
         {
             enemyTexture1 = Content.Load<Texture2D>("Enemies\\alienl");
             enemyTexture2 = Content.Load<Texture2D>("Enemies\\alienr");
+        }
+
+        public bool HasPlayerReachedExit(Vector2 position)
+        {
+            // Work out where the center of the guy is
+            int column = (int)(position.X / tileWidth);
+            int row = (int)(position.Y / tileHeight);
+
+            return (levelData.isExit(row, column));
         }
 
         private void ResolveCollision(Vector2 depth, ref Vector2 position)
@@ -263,10 +273,11 @@ namespace LevelLibrary
 
         #region private
 
-        private void UpdateEnemies(GameTime gameTime)
+        private void UpdateEnemies(Vector2 playerPosition, GameTime gameTime)
         {
             for (int i = 0; i < levelData.numberAliens; i++)
             {
+                enemies[i].UpdatePlayerLocation(playerPosition);
                 enemies[i].Update(gameTime, this);
             }
         }
@@ -294,7 +305,7 @@ namespace LevelLibrary
                 startPosition.X = (float)(levelData.EnemyPositions[i, 0] * this.tileWidth);
                 startPosition.Y = (float)(levelData.EnemyPositions[i, 1] * this.tileHeight);
                 enemies[i] = new Enemy();
-                enemies[i].Initialise(enemyAnimation[i], startPosition, enemyMode.LeftRight, direction, screenLimits);
+                enemies[i].Initialise(enemyAnimation[i], startPosition, (LevelLibrary.enemyMode)levelData.EnemyTypes[i], direction, screenLimits);
             }
         }
 

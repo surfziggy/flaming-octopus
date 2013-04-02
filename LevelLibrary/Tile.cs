@@ -35,6 +35,10 @@ namespace LevelLibrary
         /// past it to the left and right, but can not fall down through the top of it.
         /// </summary>
         Platform = 2,
+        /// <summary>
+        /// A platform tile which exits the player from the level to the next level
+        /// </summary>
+        LevelExit = 3
     }
 
     /// <summary>
@@ -60,9 +64,13 @@ namespace LevelLibrary
             {
                 Collision = TileCollision.Passable;
             }
-            else
+            else if (texture < 99)
             {
                 Collision = TileCollision.Platform;
+            }
+            else
+            {
+                Collision = TileCollision.LevelExit;
             }
         }
     }
